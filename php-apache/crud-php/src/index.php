@@ -1,5 +1,5 @@
 <?php
-$host = "172.17.0.2";
+$host = "172.17.0.3";
 $port = "5432";
 $dbname = "alumnos";
 $user = "postgres"; 
@@ -188,7 +188,10 @@ if (isset($_POST["update"])) {
                             <td>
                                 <!-- Agregar el script de confirmación antes de redirigir a la página de eliminación -->
                                 <a class="btn btn-danger" href="<?php echo " javascript:confirmDelete(" . $alumno->id .
-                                    ")" ?>">🗑️</a>
+                                    ")" ?>">Eliminar</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-warning" href="<?php echo "index.php?edit_id=" . $alumno->id; ?>">Modificar</a>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -208,3 +211,4 @@ if (isset($_POST["update"])) {
 </script>
 
 </html>
+

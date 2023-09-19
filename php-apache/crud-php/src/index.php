@@ -7,6 +7,15 @@ $password = "postgres";
 
 $edit_mode = false; // Variable para controlar el modo de edición
 
+// Verificar si el usuario ya está autenticado
+if (isset($_SESSION['usuario_id'])) {
+    // Usuario autenticado, permitir acceso a la página
+} else {
+    // Usuario no autenticado, redirigir a la página de inicio de sesión
+    header("Location: login.php");
+    exit();
+}
+
 try {
     $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$dbname;user=$user;password=$password");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

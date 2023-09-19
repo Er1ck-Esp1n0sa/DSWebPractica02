@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (!isset($_SESSION['sesion_iniciada'])) {
+    header("Location: index.php");
+    exit();
+}
+
 $host = "172.17.0.3";
 $port = "5432";
 $dbname = "alumnos";
@@ -16,7 +21,7 @@ try {
     die("Error en la conexión a la base de datos: " . $e->getMessage());
 }
 
-//Insertar Alumno
+// Insertar Alumno
 if (isset($_POST["insert"])) {
     $nombre = $_POST["nombre"];
     $direccion = $_POST["direccion"];
@@ -25,7 +30,13 @@ if (isset($_POST["insert"])) {
 
     try {
         $sentencia = $pdo->prepare("INSERT INTO alumnos (nombre, direccion, telefono, correo) VALUES (?, ?, ?, ?)");
-        $resultado = $sentencia->execute([$nombre, $direccion, $telefono, $correo]);
+        $sentencia->bindParam(1, $nombre);
+        $sentencia->bindParam(2, $direccion);
+        $sentencia->bindParam(3, $telefono);
+        $sentencia->bindParam(4, $correo);
+        
+        $resultado = $sentencia->execute();
+
         if ($resultado === true) {
             header("Location: formulario.php");
             exit();
@@ -37,7 +48,7 @@ if (isset($_POST["insert"])) {
     }
 }
 
-//Mostrar Alumnos
+// Mostrar Alumnos
 try {
     $sentencia = $pdo->query("SELECT id, nombre, direccion, correo, telefono FROM alumnos");
     $alumnos = $sentencia->fetchAll(PDO::FETCH_OBJ);
@@ -45,12 +56,13 @@ try {
     echo "Error en la consulta a la base de datos: " . $e->getMessage();
 }
 
-//Eliminar Alumno
+// Eliminar Alumno
 if (isset($_GET["id"])) {
     $id = $_GET["id"];
     try {
         $sentencia = $pdo->prepare("DELETE FROM alumnos WHERE id = ?");
-        $resultado = $sentencia->execute([$id]);
+        $sentencia->bindParam(1, $id);
+        $resultado = $sentencia->execute();
 
         if ($resultado === true) {
             header("Location: formulario.php");
@@ -63,13 +75,14 @@ if (isset($_GET["id"])) {
     }
 }
 
-//Modificar Alumno
+// Modificar Alumno
 if (isset($_GET["edit_id"])) {
     $edit_id = $_GET["edit_id"];
     $edit_mode = true;
     try {
-        $sentencia = $pdo->prepare("SELECT * FROM alumnos WHERE id = ?;");
-        $sentencia->execute([$edit_id]);
+        $sentencia = $pdo->prepare("SELECT * FROM alumnos WHERE id = ?");
+        $sentencia->bindParam(1, $edit_id);
+        $sentencia->execute();
         $alumno_edit = $sentencia->fetch(PDO::FETCH_OBJ);
     } catch (PDOException $e) {
         echo "Error en la conexión o consulta a la base de datos: " . $e->getMessage();
@@ -85,7 +98,13 @@ if (isset($_POST["update"])) {
     $correo = $_POST["correo"];
     try {
         $sentencia = $pdo->prepare("UPDATE alumnos SET nombre = ?, direccion = ?, correo = ?, telefono = ? WHERE id = ?");
-        $resultado = $sentencia->execute([$nombre, $direccion, $correo, $telefono, $id]);
+        $sentencia->bindParam(1, $nombre);
+        $sentencia->bindParam(2, $direccion);
+        $sentencia->bindParam(3, $correo);
+        $sentencia->bindParam(4, $telefono);
+        $sentencia->bindParam(5, $id);
+        
+        $resultado = $sentencia->execute();
 
         if ($resultado === true) {
             header("Location: formulario.php");

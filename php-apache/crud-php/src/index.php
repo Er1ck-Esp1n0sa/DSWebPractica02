@@ -7,6 +7,15 @@ $password = "postgres";
 
 $edit_mode = false; // Variable para controlar el modo de edición
 
+// Verificar si el usuario ya está autenticado
+if (isset($_SESSION['usuario_id'])) {
+    // Usuario autenticado, permitir acceso a la página
+} else {
+    // Usuario no autenticado, redirigir a la página de inicio de sesión
+    header("Location: login.php");
+    exit();
+}
+
 try {
     $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$dbname;user=$user;password=$password");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -125,6 +134,22 @@ if (isset($_POST["update"])) {
                 <h1>Alta Alumnos Formulario</h1>
                 <form action="index.php" method="POST">
                     <?php if ($edit_mode && isset($alumno_edit)): ?>
+
+                        <div class="container">
+                            <div class="row justify-content-center p-5">
+                                <div class="col-sm-6">
+                                    <h1>Iniciar Sesión</h1>
+                                    <form action="login.php" method="POST">
+                                        <label>Nombre de Usuario</label>
+                                        <input type="text" name="nombre_usuario" class="form-control" required>
+                                        <label>Contraseña</label>
+                                        <input type="password" name="contraseña" class="form-control" required>
+                                        <input type="submit" class="btn btn-primary" name="login" value="Iniciar Sesión">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
                     <!-- En modo de edición, muestra el ID oculto para identificar al alumno -->
                     <input type="hidden" name="id" value="<?php echo $alumno_edit->id; ?>">
                     <?php endif; ?>
